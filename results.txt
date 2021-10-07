@@ -1,0 +1,100 @@
+
+Stage
+----------
+when flag clicked:
+set (WHIRL) effect to (0)
+switch backdrop to (backdrop1)
+
+when i receive (message3):
+switch backdrop to (3e28c390bb6c15a20bc72c028b82a00b) and wait
+
+
+Sprite1
+----------
+when flag clicked:
+
+
+go to x: (15) y: (0)
+set (GHOST) effect to (100)
+show 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+hide 
+
+when i receive (message1):
+
+
+
+
+
+
+when i receive (message2):
+
+
+
+
+
+
+
+
+
+when i receive (message3):
+set (GHOST) effect to (0)
+show 
+
+glide (0.2) secs to x (15) y (0)
+
+
+when i receive (message3):
+
+
+
+
+Sprite2
+----------
+when flag clicked:
+go to x: (0) y: (500)
+when i receive (message3):
+hide 
+show 
+glide (0.5) secs to x (0) y (0)
