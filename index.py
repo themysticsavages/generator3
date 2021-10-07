@@ -21,9 +21,13 @@ class util():
         if opcode != 'sound_sounds_menu': let += opcode + ' '
 
         if len(root['inputs']) != 0:
+          runonce = False
           for k0 in root['inputs']:
+            if runonce == True: break
+
             if opcode == 'motion_gotoxy':
               let += '({}, {}) '.format(root['inputs'][k0][1][0], root['inputs'][k0][1][1])
+
             if opcode == 'sound_playuntildone':
               block = fnd['blocks'][root['inputs'][k0][1]]
 
@@ -33,7 +37,18 @@ class util():
                 src = 'failed to load'
 
               let += str('"'+block['fields']['SOUND_MENU'][0]+'"').replace(' ', '') + ' ('+src+')'
+
             if opcode == 'motion_glidesecstoxy':
               let += '({}, ({}, {})) '.format(root['inputs'][k0][0], root['inputs'][k0][1][0], root['inputs'][k0][1][1])
+              
+            if opcode == 'looks_seteffectto':
+              let += '({},{}) '.format(root['fields']['EFFECT'][0],root['inputs'][k0][1][1])
+
+            if opcode == 'sensing_keypressed':
+              key = fnd['blocks'][root['inputs'][k0][1]]['fields']['KEY_OPTION'][0]
+
+              let += '('+key+') '
+            
+            runonce = True
 
         fh.write(let+'\n')
