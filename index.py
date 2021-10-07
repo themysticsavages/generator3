@@ -9,14 +9,14 @@ class util():
     JSON = []
     fh = open('results.txt','a')
 
-    fh.write('Generated code\n*URLs next to sounds is the link to the file in the assets API*\n======================\n\n')
     for i in range(len(targets)):
-      let = ''
+      fh.write('\n'+targets[i]['name']+'\n----------\n')
 
       for k in targets[i]['blocks']:
         opcode = targets[i]['blocks'][k]['opcode']
         root = targets[i]['blocks'][k]
         fnd = targets[i]
+        let = ''
 
         if opcode != 'sound_sounds_menu': let += opcode + ' '
 
@@ -47,7 +47,7 @@ class util():
             if opcode == 'sensing_keypressed':
               key = fnd['blocks'][root['inputs'][k0][1]]['fields']['KEY_OPTION'][0]
 
-              let += '('+key+') '
+              let += '('+key.upper()+') '
             
             runonce = True
 
