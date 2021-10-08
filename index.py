@@ -32,9 +32,10 @@ class util():
         fnd = targets[i]
         let = ''
 
-        print(opcode)
         if opcode == 'event_whenflagclicked':
           let += 'when flag clicked:'
+        if opcode == 'event_broadcast':
+          let += 'broadcast [{}]'.format(root['inputs']['BROADCAST_INPUT'][1][1])
         if opcode == 'event_whenbroadcastreceived':
           br = root['fields']['BROADCAST_OPTION'][0]
           let += 'when i receive [{}]'.format(br)
@@ -48,6 +49,16 @@ class util():
           opt = targets[i]['blocks'][mn]['fields']['CLONE_OPTION'][0].replace('_','')
           
           let += 'create clone of [{}]'.format(opt)
+        if opcode == 'control_wait_until':
+          cond = root['inputs']['CONDITION'][1]
+          if targets[i]['blocks'][cond]['opcode'] == 'sensing_keypressed':
+            k = targets[i]['blocks'][cond]['inputs']['KEY_OPTION'][1]
+            key = targets[i]['blocks'][k]['fields']['KEY_OPTION'][0]
+          let += 'wait until &lt;key [{}] pressed&gt;'.format(key)
+        if opcode == 'sensing_askandwait':
+          let += 'ask [{}] and wait'.format(root['inputs']['QUESTION'][1][1])
+        if opcode == 'control_forever':
+          let += 'forever'
         if opcode == 'motion_gotoxy':
           try:
             x = root['inputs']['X'][2][0]
@@ -79,6 +90,16 @@ class util():
             let += 'switch costume to [{}]'.format(targets[i]['blocks'][cos]['fields']['COSTUME'][0])
           except KeyError:
             let += 'switch costume to (not found)'
+        if opcode == 'looks_switchbackdropto':
+          bid = root['inputs']['BACKDROP'][1]
+          bg = targets[i]['blocks'][bid]['fields']['BACKDROP'][0]
+
+          let += 'switch backdrop to [{}]'.format(bg)
+        if opcode == 'looks_switchbackdroptoandwait':
+          bid = root['inputs']['BACKDROP'][1]
+          bg = targets[i]['blocks'][bid]['fields']['BACKDROP'][0]
+
+          let += 'switch backdrop to [{}] and wait'.format(bg)
         if opcode == 'looks_changeeffectby':
           cha = root['inputs']['CHANGE'][1][1]
           ef = root['fields']['EFFECT'][0]
@@ -93,6 +114,9 @@ class util():
           val = root['inputs']['VALUE'][1][1]
 
           let += 'set [{}] to [{}]'.format(var,val)
+        if opcode == 'data_hidevariable':
+          var = root['fields']['VARIABLE'][0]
+          let += 'hide variable [{}]'.format(var)
         if opcode == 'sound_playuntildone':
           d = root['inputs']['SOUND_MENU'][1]
           val = targets[i]['blocks'][d]['fields']['SOUND_MENU'][0]
@@ -116,6 +140,6 @@ class util():
 
     @app.get('/<f>')
     def getf(f):
-      return open(f+'.html').read()
+      return open(f+'.html').read().replace('\n\n\n','\n')
 
     app.run(host='0.0.0.0')
