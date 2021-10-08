@@ -1,4 +1,5 @@
 import requests
+import flask
 import json
 import time
 
@@ -12,7 +13,18 @@ class util():
     fh = open('results.txt','a')
 
     for i in range(len(targets)):
-      fh.write('\n'+targets[i]['name']+'\n----------\n')
+      ht = open(targets[i]['name']+'.html'.lower(),'w')
+      fh.write('{}\n'.format(targets[i]['name']))
+
+      ht.write("""
+                <!doctype html>
+                <html>
+                  <head>
+                    <script src="https://scratchblocks.github.io/js/scratchblocks-v3.5.2-min.js"></script>
+                  <head>
+                  <body>
+                    <p class="blocks">
+              """)
 
       for k in targets[i]['blocks']:
         opcode = targets[i]['blocks'][k]['opcode']
@@ -23,29 +35,23 @@ class util():
         if opcode == 'event_whenflagclicked':
           let += 'when flag clicked:'
         if opcode == 'looks_seteffectto':
-          effect = root['fields']['EFFECT'][0]
+          ef = root['fields']['EFFECT'][0]
           num = root['inputs']['VALUE'][1][1]
 
-          let += 'set ({}) effect to ({})'.format(effect,num)
-
-        if opcode == 'event_whenbroadcastreceived':
-          msg = root['fields']['BROADCAST_OPTION'][0]
-          let += 'when i receive ({}):'.format(msg)
-
+          let += 'set [{}] effect to ({})'.format(ef.lower(),num)
         if opcode == 'motion_gotoxy':
           try:
-            x = root['inputs']['X'][2][1]
+            x = root['inputs']['X'][2][0]
             y = root['inputs']['Y'][2][1]
           except IndexError:
-            x = root['inputs']['X'][1][1]
+            x = root['inputs']['X'][1][0]
             y = root['inputs']['Y'][1][1]
           
           let += 'go to x: ({}) y: ({})'.format(x,y)
-
         if opcode == 'motion_changeyby':
           y = root['inputs']['DY'][2][1]
 
-          let += 'change y by ({})'.format(y)
+          let += 'change y by: ({})'.format(y)
         if opcode == 'motion_glidesecstoxy':
           secs = root['inputs']['SECS'][1][1]
           
@@ -55,41 +61,42 @@ class util():
           except IndexError:
             x = root['inputs']['X'][1][1]
             y = root['inputs']['Y'][1][1]
-
-          print(x,y)
           
-          let += 'glide ({}) secs to x ({}) y ({})'.format(secs,x,y)
-
+          let += 'glide ({}) secs to x: ({}) y: ({})'.format(secs,x,y)
         if opcode == 'looks_switchcostumeto':
           cos = root['inputs']['COSTUME'][1]
 
           try:
-            let += 'switch costume to ({})'.format(targets[i]['blocks'][cos]['fields']['COSTUME'][0])
+            let += 'switch costume to: [{}]'.format(targets[i]['blocks'][cos]['fields']['COSTUME'][0])
           except KeyError:
             let += 'switch costume to (not found)'
-
-        if opcode == 'looks_switchbackdropto':
-          bg = root['inputs']['BACKDROP'][1]
-          nm = fnd['blocks'][bg]['fields']['BACKDROP'][0]
-
-          let += 'switch backdrop to ({})'.format(nm)
-
-        if opcode == 'looks_switchbackdroptoandwait':
-          bg = root['inputs']['BACKDROP'][1]
-          nm = fnd['blocks'][bg]['fields']['BACKDROP'][0]
-
-          let += 'switch backdrop to ({}) and wait'.format(nm)
-
         if opcode == 'looks_changeeffectby':
           cha = root['inputs']['CHANGE'][1][1]
           ef = root['fields']['EFFECT'][0]
 
-          let += 'change ({}) effect by ({})'.format(ef, cha)
-
+          let += 'change [{}] effect by ({})'.format(ef.lower(), cha)
         if opcode == 'looks_show':
           let += 'show '
-
         if opcode == 'looks_hide':
           let += 'hide '
 
         fh.write(let+'\n')
+        ht.write(let+'\n')
+
+      ht.write("""
+                </p>
+                <script type="text/javascript">
+                  scratchblocks.renderMatching("p.blocks", {
+                    style: 'scratch3'
+                  })
+                </script>
+              """)
+
+  def serveHTML():
+    app = flask.Flask('__main__')
+
+    @app.get('/<f>')
+    def getf(f):
+      return open(f+'.html').read()
+
+    app.run(host='0.0.0.0')

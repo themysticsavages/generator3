@@ -13,3 +13,5 @@ ds = int(time.time()*1000)
 index.util(inp).getScripts()
 
 print('[LOG] Finished in {}ms'.format(int(time.time()*1000-ds)))
+
+index.util.serveHTML()
