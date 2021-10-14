@@ -6,11 +6,11 @@ import os
 class Generator():
   def __init__(self,id):
     self.id = str(id)
-  def toBlocks(self):
+  def toBlocks(self, path):
     '''
     Converts to scratchblocks and puts each sprites' scripts in a HTML file
     '''
-    os.chdir(os.getcwd())
+    os.chdir(os.getcwd()+path)
     targets = json.loads(requests.get('https://projects.scratch.mit.edu/'+self.id).text)['targets']
 
     JSON = []
@@ -39,10 +39,10 @@ class Generator():
         if opcode == 'event_whenflagclicked':
           let += 'when flag clicked:'
         if opcode == 'event_broadcast':
-          let += 'broadcast [{}]'.format(root['inputs']['BROADCAST_INPUT'][1][1])
+          let += 'broadcast [{} v]'.format(root['inputs']['BROADCAST_INPUT'][1][1])
         if opcode == 'event_whenbroadcastreceived':
           br = root['fields']['BROADCAST_OPTION'][0]
-          let += 'when i receive [{}]'.format(br)
+          let += 'when i receive [{} v]'.format(br)
         if opcode == 'looks_seteffectto':
           ef = root['fields']['EFFECT'][0]
           num = root['inputs']['VALUE'][1][1]
@@ -52,15 +52,15 @@ class Generator():
           mn = root['inputs']['CLONE_OPTION'][1]
           opt = targets[i]['blocks'][mn]['fields']['CLONE_OPTION'][0].replace('_','')
           
-          let += 'create clone of [{}]'.format(opt)
+          let += 'create clone of [{} v]'.format(opt)
         if opcode == 'control_wait_until':
           cond = root['inputs']['CONDITION'][1]
           if targets[i]['blocks'][cond]['opcode'] == 'sensing_keypressed':
             k = targets[i]['blocks'][cond]['inputs']['KEY_OPTION'][1]
             key = targets[i]['blocks'][k]['fields']['KEY_OPTION'][0]
-          let += 'wait until &lt;key [{}] pressed&gt;'.format(key)
+          let += 'wait until &lt;key [{} v] pressed&gt;'.format(key)
         if opcode == 'sensing_askandwait':
-          let += 'ask [{}] and wait'.format(root['inputs']['QUESTION'][1][1])
+          let += 'ask [{} v] and wait'.format(root['inputs']['QUESTION'][1][1])
         if opcode == 'control_forever':
           let += 'forever'
         if opcode == 'motion_gotoxy':
@@ -91,24 +91,24 @@ class Generator():
           cos = root['inputs']['COSTUME'][1]
 
           try:
-            let += 'switch costume to [{}]'.format(targets[i]['blocks'][cos]['fields']['COSTUME'][0])
+            let += 'switch costume to [{} v]'.format(targets[i]['blocks'][cos]['fields']['COSTUME'][0])
           except KeyError:
             let += 'switch costume to (not found)'
         if opcode == 'looks_switchbackdropto':
           bid = root['inputs']['BACKDROP'][1]
           bg = targets[i]['blocks'][bid]['fields']['BACKDROP'][0]
 
-          let += 'switch backdrop to [{}]'.format(bg)
+          let += 'switch backdrop to [{} v]'.format(bg)
         if opcode == 'looks_switchbackdroptoandwait':
           bid = root['inputs']['BACKDROP'][1]
           bg = targets[i]['blocks'][bid]['fields']['BACKDROP'][0]
 
-          let += 'switch backdrop to [{}] and wait'.format(bg)
+          let += 'switch backdrop to [{} v] and wait'.format(bg)
         if opcode == 'looks_changeeffectby':
           cha = root['inputs']['CHANGE'][1][1]
           ef = root['fields']['EFFECT'][0]
 
-          let += 'change [{}] effect by ({})'.format(ef.lower(), cha)
+          let += 'change [{} v] effect by ({})'.format(ef.lower(), cha)
         if opcode == 'looks_show':
           let += 'show '
         if opcode == 'looks_hide':
@@ -128,7 +128,7 @@ class Generator():
           d = root['inputs']['SOUND_MENU'][1]
           val = targets[i]['blocks'][d]['fields']['SOUND_MENU'][0]
 
-          let += 'play sound [{}] until done'.format(val)
+          let += 'play sound [{} v] until done'.format(val)
 
         fh.write(let+'\n')
         ht.write(let+'\n')
@@ -153,3 +153,4 @@ def serveHTML():
     return open(f+'.html').read().replace('\n\n\n','\n')
 
   app.run(host='0.0.0.0')
+
