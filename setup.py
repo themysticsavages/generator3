@@ -5,7 +5,7 @@ long_description = open('README.md', encoding='utf-8').read()
 setuptools.setup(
     name='generator3', 
     url='https://github.com/themysticsavages/generator3',                    
-    version='0.0.6',                        
+    version='0.0.9',                        
     author='themysticsavages',
     license='MIT',        
     description="Parse Scratch's large project JSONs and convert them to scratchblocks notation",
